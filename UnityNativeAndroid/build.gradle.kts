@@ -30,6 +30,8 @@ android {
 
 dependencies {
 
+    compileOnly(fileTree("C:\\Program Files\\Unity\\Hub\\Editor\\6000.0.31f1\\Editor\\Data\\PlaybackEngines\\AndroidPlayer\\Variations\\mono\\Release\\Classes"))
+    implementation("com.google.android.gms:play-services-ads-identifier:18.2.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)

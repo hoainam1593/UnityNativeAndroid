@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Activity activity = MainActivity.this;
-                UnityNativeUtils.OpenStorePage(activity, "com.mobirix.tdwt");
+                UnityNativeUtils.GetDeviceId(activity, null, null, null);
             }
         });
     }
