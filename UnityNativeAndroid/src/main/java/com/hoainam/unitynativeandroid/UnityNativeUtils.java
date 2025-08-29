@@ -12,6 +12,12 @@ import com.android.installreferrer.api.ReferrerDetails;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.unity3d.player.UnityPlayer;
 
+import java.nio.charset.StandardCharsets;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 public class UnityNativeUtils {
 
     //region open store page
@@ -143,6 +149,51 @@ public class UnityNativeUtils {
         else {
             Log.e("UnityNative", errMsg);
         }
+    }
+
+    //endregion
+
+    //region decrypt facebook referrer data
+
+    public static String DecryptFacebookReferrerData(String keyText, String cipherText, String nonceText){
+        try{
+            // Convert hex strings to byte arrays
+            byte[] key = hexToBytes(keyText);
+            byte[] nonce = hexToBytes(nonceText);
+            byte[] cipherData = hexToBytes(cipherText);
+
+            // Create cipher instance for AES-GCM
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+
+            // Create key specification
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+
+            // Create GCM parameter specification with nonce
+            // GCM tag length is typically 128 bits (16 bytes)
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(128, nonce);
+
+            // Initialize cipher for decryption
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
+
+            // Decrypt the data
+            byte[] decryptedBytes = cipher.doFinal(cipherData);
+
+            // Convert to string
+            return new String(decryptedBytes, StandardCharsets.UTF_8);
+        } catch (Exception e){
+            Log.e("Unity", "decrypt facebook referrer data failed\n" + e);
+            return "";
+        }
+    }
+
+    private static byte[] hexToBytes(String hex) {
+        int len = hex.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+                    + Character.digit(hex.charAt(i + 1), 16));
+        }
+        return data;
     }
 
     //endregion
